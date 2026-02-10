@@ -81,40 +81,40 @@ Please follow these steps closely to allow SSH authentication on OSCER:
     \end{itemize}
     \item it should tell you ``Your identification has been saved in ghDS26'' and ``Your public key has been saved in ghDS26.pub'' and then print out some other stuff about a fingerprint and randomart image.
     \item type \texttt{cd \~}
-    \item type \texttt{eval "\$(ssh-agent -s)"}
-    \item type \texttt{ssh-add \~/.ssh/ghDS26}
     \item in a web browser, visit \url{https://github.com/settings/keys} and click "new SSH key". Name it "OSCER"
     \item Copy the contents of your \texttt{ghDS26.pub} file and paste it into the key box. You can do this in a couple of ways:
     \begin{itemize}
-        \item type \texttt{cat \~/.ssh/ghDS26.pub} and then select all of the text with your mouse cursor. In some terminals, this also copies the text. Otherwise you can try and right-click and then copy it. Then paste it into the box on the GitHub SSH key webpage.
+        \item type \texttt{cat \~/.ssh/ghDS26.pub} and then select all of the text with your mouse cursor. In some terminals, this also copies the text. Otherwise you can try and right-click and then copy it. Then paste it into the box on the GitHub SSH key webpage. (Note: the tilde \texttt{\~} should be typed directly next to the slash with no space.)
         \item email the key to yourself by typing
-        \texttt{mail -s "public key" email@address.com < \~/.ssh/ghDS26.pub}
+        \texttt{mail -s "public key" your.email@address.com < \~/.ssh/ghDS26.pub}
+        where you replace \texttt{your.email@address.com} with your actual email address.
         Then copy/paste it into the box on the GitHub SSH key webpage
     \end{itemize}
-    \item Before proceeding to the next question, you may need to skip below to question \#9 (part 3) of this problem set and add the ssh key initialization to your bash profile file.
 \end{enumerate}
+    \textbf{Note:} Before proceeding to questions 3 or 4 (which involve git operations), complete question 9 to set up the ssh-agent in your .bash\_profile file.
     If all of that was too much for you, you can also check out this YouTube video for a walkthrough: \url{https://www.youtube.com/watch?v=s6KTbytdNgs}
 \question If you have already cloned your forked GitHub repository to your home directory on OSCER, you will need to adjust the URL for the remote by following these steps:
 \begin{enumerate}
-    \item Make sure you are in your local repository directory by typing \texttt{cd \~/DScourseS26}.
-    \item Type 
-        \texttt{git remote set-url origin git@github.com:[your-github-username]/DScourseS26.git}
-        Note that you can also git this url from the same place that you get the clone on your github fork. Just go to the "SSH" instead of "HHTPS" section.
+    \item Make sure you are in your local repository directory by typing \texttt{cd \~/DScourseS26}. (Note: the tilde \texttt{\~} should be typed directly next to the slash with no space in between.)
+    \item Type
+        \texttt{git remote set-url origin git@github.com:your-github-username/DScourseS26.git}
+        where you replace \texttt{your-github-username} with your actual GitHub username.
+        Note that you can also get this url from the same place that you get the clone on your github fork. Just go to the "SSH" instead of "HTTPS" section.
     \item Do a \texttt{git pull} and then a \texttt{git push} to make sure things work well with the new SSH tokens.
 \end{enumerate}
 \question If you have not already, clone your forked GitHub repository to your home directory on OSCER by following these steps:
 \begin{enumerate}
-    \item Make sure you are in your home directory by typing \texttt{cd \~}.
-    \item Type \texttt{git clone git@github.com:[your-github-username]/DScourseS26.git}
+    \item Make sure you are in your home directory by typing \texttt{cd \~}. (Note: the tilde \texttt{\~} is a shortcut for your home directory and should be typed directly next to the slash with no space in between.)
+    \item Type \texttt{git clone git@github.com:your-github-username/DScourseS26.git} where you replace \texttt{your-github-username} with your actual GitHub username.
     \item Check that everything works by typing \texttt{ls} and hitting enter. You should see a directory called ``DScourseS26'' and if you change to that directory, you should see an identical directory and file structure to what is on your GitHub private fork of the course repo.
 \end{enumerate}
-\question Go to \url{www.overleaf.com} and create another .tex document, this time naming it \texttt{PS2\_LastName.tex}. In it, write down a list (in a LaTeX \texttt{itemize} envrionment) that outlines the main tools of a data scientist (as discussed in class). Compile the PDF.
+\question Go to \url{www.overleaf.com} and create another .tex document, this time naming it \texttt{PS2\_LastName.tex}. In it, write down a list (in a LaTeX \texttt{itemize} environment) that outlines the main tools of a data scientist (as discussed in class). Compile the PDF.
 \question Compile your .tex file, download the PDF and .tex file, and transfer it to your cloned repository on OSCER. There are many ways to do this;  you may ask an AI chatbot (which will probably give you some terminal commands you can use at the RStudio terminal or similar) or simply drag-and-drop using an SFTP client like FileZilla, WinSCP or Cyberduck. Do \textbf{not} put these files in your fork on your personal laptop; otherwise git will detect a merge conflict and that will be a painful process to resolve.
 \question Make sure that your .tex and .pdf files have the correct naming convention (see top of this problem set for directions) and are located in the correct directory. If the directory does not exist, create it using the \texttt{mkdir} command.
 \question Update your OSCER git repository (in your OSCER home directory) by using the following commands:
 \begin{itemize}
     \item \texttt{cd \~}
-    \item \texttt{cd DScourseS26/ProblemSets/PS2} (note: you may need to create the \texttt{PS2} directory if it doesn't exist)
+    \item \texttt{cd DScourseS26/ProblemSets/PS2}
     \item \texttt{git add PS2\_LastName.*}
     \item \texttt{git commit -m 'Completed PS2'}
     \item \texttt{git push origin master}
@@ -122,16 +122,27 @@ Please follow these steps closely to allow SSH authentication on OSCER:
 Once you have done this, issue a \texttt{git pull} from the location of your other local git repository (e.g. on RStudio on your personal computer). Verify that the PS2 directory appears in the appropriate place in your other local repository.
 \question Make sure that you have R version 4.0.2 (or higher) installed on OSCER. To do this, take the following steps:
 \begin{enumerate}
-    \item At the command prompt, type \texttt{nano \textasciitilde/.bash\_profile} and press enter. 
-    \item Type \texttt{module load R/4.0.2-foss-2020a} somewhere in the middle of that file. 
-    \item At the bottom of the file, type the following:
-        \begin{itemize}
-        \item type \texttt{eval "\$(ssh-agent -s)"}
-        \item type \texttt{ssh-add \~/.ssh/ghDS26}
-        \end{itemize}
+    \item At the command prompt, type \texttt{nano \textasciitilde/.bash\_profile} and press enter.
+    \item Type \texttt{module load R/4.0.2-foss-2020a} somewhere in the middle of that file.
+    \item At the bottom of the file, add the following improved ssh-agent configuration (this prevents starting multiple ssh-agent processes):
+        \begin{verbatim}
+# https://rabexc.org/posts/pitfalls-of-ssh-agents
+ssh-add -l &>/dev/null
+if [ "$?" == 2 ]; then                      # Check connection to ssh-agent
+  test -r ~/.ssh-agent && \
+    eval "$(<~/.ssh-agent)" >/dev/null      # If no connection, source saved env variables
+
+  ssh-add -l &>/dev/null
+  if [ "$?" == 2 ]; then                    # Check connection to ssh-agent again
+    (umask 066; ssh-agent > ~/.ssh-agent)   # No agent running; start one
+    eval "$(<~/.ssh-agent)" >/dev/null      # Source new env variables
+    ssh-add ~/.ssh/ghDS26                   # Add private keys
+  fi
+fi
+        \end{verbatim}
     \item Then push Control+X and then type ``yes'' (or ``y'') when it asks if you want to modify the file.
 \end{enumerate}
 \question Now open R (on OSCER), verify that it is running the version mentioned above, and install the \texttt{xml2} package by typing \texttt{install.packages('xml2')} at the command prompt. (\textbf{NOTE: The package is ``X-M-L 2,'' NOT ``X-M 12''}) Answer `yes' to install it in your home directory. Enter the number of any of the server mirrors that come up (I usually choose Texas). Building the package may take a couple of minutes. Once that has finished, repeat the process, but substitute \texttt{tidyverse} for \texttt{xml2}. Building \texttt{tidyverse} may take as much as 10-15 minutes. You don't need to watch it build, but be sure not to close your SSH terminal window or otherwise disconnect your session. When you are done with the build, exit R and log off of OSCER. You can always exit a program (or logout) on OSCER by typing Control+D.
-\question Update your fork of the class repository on both your personal laptop as well as on OSCER, since I'm been continuously updating things (and as part of PS1, everyone in the class submitted pull requests). The command to do this is \texttt{git pull upstream master}. A step-by-step help for how to do this is located \href{https://help.github.com/articles/syncing-a-fork/}{here}. More simply, you may also just go to your fork on GitHub and click the button that says ``Sync fork'' or ``Fetch upstream'' or similar.
+\question Update your fork of the class repository on both your personal laptop as well as on OSCER, since I've been continuously updating things (and as part of PS1, everyone in the class submitted pull requests). The command to do this is \texttt{git pull upstream master}. A step-by-step help for how to do this is located \href{https://help.github.com/articles/syncing-a-fork/}{here}. More simply, you may also just go to your fork on GitHub and click the button that says ``Sync fork'' or ``Fetch upstream'' or similar.
 \end{questions}
 \end{document}

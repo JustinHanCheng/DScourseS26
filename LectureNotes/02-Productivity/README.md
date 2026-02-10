@@ -101,7 +101,7 @@ Many times when performing intensive computational tasks, you will exceed the co
 ### 4.1 SSH
 The way to interface with the remote server (via the Linux command line) is via Secure Shell (commonly called SSH). You download an SSH client to your computer, provide it the IP address and login credentials for your account on the HPC cluster, and then you can log in via an internet connection. (In some cases, you may need to log in via a Virtual Private Network (VPN) for security reasons.) The following are SSH clients for different OSes.
 
-* Windows: I recommend using [PuTTY](http://www.putty.org/)
+* Windows: I recommend using [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
 * Mac OS: SSH is built in via the Terminal (This is because Mac OS is built on Unix)
 * Linux: SSH is built in via the Terminal
 
@@ -200,4 +200,3 @@ In the text editors Atom and Sublime Text 3 you can install Linter packages that
 * [Git Basics](https://www.youtube.com/watch?v=U8GBXvdmHT4)
 * [Git Workflows](http://blog.endpoint.com/2014/05/git-workflows-that-work.html)
 * [OU Supercomputing Center for Education & Research (OSCER)](http://www.ou.edu/oscer.html)
-
