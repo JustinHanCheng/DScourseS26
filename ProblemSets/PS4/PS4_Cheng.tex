@@ -1,0 +1,70 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+\title{Econ 5253 Problem Set 4}
+\author{Cheng}
+\date{Spring 2026}
+
+\begin{document}
+\maketitle
+
+\section*{Data Sources I Would Like to Scrape}
+I am most interested in financial and macroeconomic data. One source is the
+Federal Reserve Economic Data (FRED) API, which provides time series for
+interest rates, inflation, labor markets, and GDP components. A second source
+is SEC EDGAR filings (10-K, 10-Q, 8-K), which can be used for event studies,
+text analysis of firm disclosures, and accounting-based predictors. A third
+source is market microstructure and price data (for example, equities, ETFs, and
+options) from API providers that expose historical bars and quote data. These
+sources are useful for forecasting, asset pricing, and policy analysis.
+
+\section*{Question 5 (JSON Exercise) Answers}
+\begin{enumerate}
+  \item I created \texttt{PS4a\_Cheng.R} and used a system call with
+  \texttt{wget -O dates.json "URL"} to download the JSON file.
+
+  \item I printed the raw JSON to the console using a system call to
+  \texttt{cat dates.json}.
+
+  \item I converted JSON to a list with \texttt{fromJSON("dates.json")} and
+  then to a data frame using:
+\begin{verbatim}
+mydf <- bind_rows(mylist$result[-1])
+\end{verbatim}
+
+  \item Object types from my run:
+\begin{verbatim}
+class(mydf) = c("tbl_df", "tbl", "data.frame")
+class(mydf$date) = "character"
+\end{verbatim}
+
+  \item The first 10 rows were printed with \texttt{head(mydf, 10)}.
+  The resulting table has 6 columns:
+  \texttt{date, description, lang, category1, category2, granularity}.
+\end{enumerate}
+
+\section*{Question 6 (sparklyr Exercise) Answers}
+I created \texttt{PS4b\_Cheng.R} with all requested sparklyr pipeline commands:
+\texttt{spark\_connect()}, \texttt{copy\_to()}, \texttt{select()},
+\texttt{filter()}, combined select+filter pipeline, \texttt{group\_by()} +
+\texttt{summarize()}, and \texttt{arrange()}.
+
+On OSCER, first execution failed due package-version dependency conflicts in the
+provided R 4.0.2 environment. The key messages in \texttt{PS4b\_Cheng.Rout}
+were:
+\begin{verbatim}
+namespace 'dplyr' 1.0.9 is being loaded, but >= 1.1.2 is required
+there is no package called 'sparklyr'
+\end{verbatim}
+
+The assignment note says this part may fail on first try and that students are
+not penalized in that case. I therefore kept the full script and submitted it,
+along with logs documenting the attempt.
+
+If package compatibility is restored, expected object classes are:
+\texttt{class(df1)} as tibble/data.frame and \texttt{class(df)} as a Spark
+table object (e.g., \texttt{tbl\_spark}).
+\end{document}
