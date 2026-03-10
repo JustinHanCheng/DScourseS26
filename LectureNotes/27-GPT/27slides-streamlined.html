@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 27</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Tyler Ransom" />
+    <script src="27slides-streamlined_files/header-attrs-2.30/header-attrs.js"></script>
+    <link href="27slides-streamlined_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="27slides-streamlined_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="27slides-streamlined_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="byu-colors.css" type="text/css" />
+    <link rel="stylesheet" href="custom-compact.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 27
+]
+.subtitle[
+## From ChatGPT to Claude Code: AI Agents for Academic Research
+]
+.author[
+### Tyler Ransom
+]
+.date[
+### ECON 5253, University of Oklahoma
+]
+
+---
+
+
+
+
+# Today's plan
+
+1. What you already know: ChatGPT
+
+2. The evolution: AI agents and Claude Code
+
+3. ChatGPT vs Claude Code: Key differences
+
+4. Getting started with Claude Code
+
+5. .hi[Live demonstration (30 minutes)]
+
+6. Other tools and best practices
+
+
+
+---
+# ChatGPT: What you already know
+
+Most of you are familiar with ChatGPT and similar chat interfaces:
+
+- Web-based chat at chat.openai.com (and similar: Claude.ai, Gemini, etc.)
+
+- You ask questions, it responds
+
+- Great for: explaining concepts, brainstorming, quick coding help, editing text
+
+- .hi[Key limitations:]
+    - No access to your files or codebase
+    - Can't run code or tests
+    - Each conversation starts fresh
+    - Manual copy-paste workflow between AI and your project
+
+.hi[The 2026 landscape:] GPT-5.2, Claude Opus 4.6, Gemini 3 Pro, DeepSeek R1
+
+- All share the same basic chat paradigm
+
+- Freemium model; ~$20/month for full features
+
+
+
+---
+# The evolution: AI Agents
+
+Moving beyond simple question-and-answer:
+
+- .hi[Traditional chat LLMs:] You ask, they answer (one-shot)
+
+- .hi[AI Agents:] Given a goal, they autonomously take steps to achieve it
+
+.pull-left[
+.hi[Chat workflow:]
+- You describe task in detail
+- AI gives you code/text
+- You copy-paste into project
+- You run it and check
+- If broken, back to chat...
+- Repeat until it works
+]
+
+.pull-right[
+.hi[Agent workflow:]
+- You describe the goal
+- AI explores your project
+- AI writes code in your files
+- AI runs tests to verify
+- AI iterates until successful
+- You review final result
+]
+
+Agents use tools (read files, run code, git), iterate and reason, and verify their own work
+
+
+
+---
+# What is Claude Code?
+
+[Claude Code](https://claude.ai/code) - Anthropic's AI coding agent for research and development:
+
+- .hi[Not a chat interface] - it's a command-line tool (CLI) in your terminal
+
+- .hi[Works directly on your files] - reads, writes, edits your actual codebase
+
+- .hi[Operates autonomously] - you give it goals, it figures out the steps
+
+.hi[Key capabilities:]
+- Explore and understand existing codebases
+- Read, write, and edit multiple files
+- Run code, tests, and terminal commands
+- Create git commits and pull requests
+- Install dependencies and fix errors
+- Iterate on tasks until successful
+
+Free tier available; $20/month for Claude Pro (5x usage)
+
+
+
+---
+# ChatGPT vs Claude Code: Side-by-side
+
+| Feature | ChatGPT | Claude Code |
+|---------|---------|-------------|
+| Interface | Web browser | Terminal/CLI |
+| File access | None (copy-paste) | Direct access to your files |
+| Code execution | Can't run code | Runs code, tests, commands |
+| Workflow | One question at a time | Multi-step autonomous tasks |
+| Context | Single conversation | Full codebase exploration |
+| Best for | Quick questions, ideas | Complex projects, refactoring |
+| Integration | Standalone | Works with git, npm, R, Python |
+| Academic use | Brainstorm, explain, edit | Data analysis, code, automate |
+
+
+
+---
+# When to use ChatGPT vs Claude Code
+
+.pull-left[
+.hi[Use ChatGPT when:]
+- Quick explanations
+- Brainstorming ideas
+- Text editing
+- Single code snippets
+- No file access needed
+]
+
+.pull-right[
+.hi[Use Claude Code when:]
+- Multi-file coding tasks
+- Data cleaning pipelines
+- Creating figures/tables
+- Documentation generation
+- Building replication packages
+- .hi[Running code in your environment]
+]
+
+
+
+---
+# Getting started with Claude Code
+
+.hi[Installation (takes 2 minutes):]
+
+```bash
+# On macOS/Linux:
+curl -fsSL https://cli.claude.ai/install.sh | sh
+claude auth login
+```
+
+.hi[Start using it:]
+
+```bash
+cd ~/my-research-project
+claude
+```
+
+.hi[Example prompts:]
+```
+analyze this codebase and explain what it does
+create publication-ready figures from my plots
+generate regression tables for all models
+organize messy scripts into logical folders
+```
+
+
+
+---
+# Why academics should care
+
+.hi[AI agents are transforming research productivity:]
+
+- [Joshua Gans](https://www.rotman.utoronto.ca/the-rotman-experience/our-community/people/gans-joshua/) had o1 write a paper [published](https://www.sciencedirect.com/science/article/pii/S0165176525000461?via%3Dihub) in *Economics Letters*
+
+- Gans argues: research could become cheaper than search - why look up papers when AI can generate research on demand?
+
+.hi[My own experience (October 2024):]
+
+- Created a working paper in health economics far outside my expertise ([link](https://www.iza.org/publications/dp/17390/are-vegetable-seed-oils-fueling-the-obesity-epidemic))
+
+- Would not have been possible pre-2024
+
+- Used: Elicit (lit review), GPT-4/Claude (coding), Claude (explanations, writing)
+
+- .hi[With Claude Code, this would have been even faster and easier]
+
+
+
+---
+# Research tasks Claude Code excels at
+
+.pull-left[
+.hi[Data and analysis:]
+- Clean and merge datasets
+- Run specs and create tables
+- Implement estimators
+- Monte Carlo simulations
+- Format conversion (Stata/R/Python)
+
+.hi[Visualization:]
+- Publication-ready figures
+- Coefficient plots
+- Flowcharts
+]
+
+.pull-right[
+.hi[Documentation:]
+- Add code comments
+- Create replication packages
+- Generate data dictionaries
+- Organize file structures
+
+.hi[LaTeX and writing:]
+- Word → LaTeX conversion
+- Beamer presentations
+- Regression tables
+- Debug compilation errors
+]
+
+
+
+---
+class: center, middle
+
+# Live Demonstration
+
+### From Messy Data to Publication-Ready Analysis
+
+### Using Claude Code for end-to-end research workflow
+
+(30 minutes)
+
+
+
+---
+# Other AI tools for academic research
+
+Claude Code is powerful, but specialized tools exist:
+
+.hi[Literature review:]
+- [Elicit.org](https://elicit.org/) and [Consensus.app](https://consensus.app/) - search and synthesize papers
+- [NotebookLM](https://notebooklm.google.com/) - create podcasts, slides, and summaries from PDFs
+
+.hi[Code completion in your editor:]
+- GitHub Copilot - inline suggestions (free for academics!)
+- Works in VS Code, RStudio; great for LaTeX/RMarkdown writing
+
+.hi[Search and writing:]
+- [Perplexity](https://perplexity.ai/) - AI search with citations
+- [lex.page](https://lex.page) - AI-augmented writing
+- Microsoft Copilot - Word, PowerPoint integration
+
+.hi[Recommendation:] Use Claude Code for coding/analysis; combine with other tools for complete workflow
+
+
+
+---
+# What I've used LLMs for in my research
+
+.small[
+- Fill out bureaucratic forms
+- Write code that automates grading
+- Write code that systematizes data analysis (for replication)
+- Write code to create data visualizations
+- Write unit tests of code
+- Prepare discussion slides for conferences
+- Prepare peer review reports
+- Prepare slide decks (including this one!)
+- Reduce word count of abstracts
+- Improve sentence clarity in papers
+- Write survey questions that methodologists would approve of
+- Explain poorly written abstracts/papers in simpler terms
+- Invert mathematical functions
+- Debug LaTeX compilation errors
+- Convert between data formats (Stata ↔ R ↔ Python)
+- Create research design flowcharts
+- ... not to mention personal life applications
+]
+
+
+
+---
+# Pro tips and best practices
+
+.hi[Effective prompting:]
+- Be specific: ❌ "Fix my code" ✅ "Fix data import error in clean_data.R"
+- Let it explore: "Explore project, then create regression tables"
+- Multi-step: "Clean data, run analysis, create figures, organize outputs"
+
+.hi[Documentation:]
+- Create CLAUDE.md files for future AI sessions
+- Add comprehensive comments to scripts
+- Generate READMEs with setup instructions
+
+.hi[Best practices:]
+- Always verify output - agents make mistakes
+- Use git/version control to revert changes
+- Be careful with sensitive data
+- Be transparent about AI use
+
+
+
+---
+# Key takeaways
+
+.pull-left[
+1. .hi[ChatGPT → Claude Code:] Chat to autonomous agents
+
+2. .hi[Different tools, different needs:] Chat for questions, agents for tasks
+
+3. .hi[Works in your environment:] File access, runs code, uses git
+
+4. .hi[Easy to start:] Install in 2 min, start small
+]
+
+.pull-right[
+5. .hi[Transforms research:] Data, docs, viz, replication
+
+6. .hi[Combine tools:] Elicit + Claude Code + Copilot
+
+7. .hi[Verify everything:] AI accelerates, doesn't replace judgment
+]
+
+.hi[Bottom line:] The question isn't whether to adopt AI agents, but how quickly.
+
+Start: [claude.ai/code](https://claude.ai/code)
+
+
+
+---
+# Staying on top of developments
+
+The AI field moves fast - essential resources:
+
+- [One Useful Thing](https://www.oneusefulthing.org/) (Ethan Mollick) - Academic perspective, teaching/research applications
+
+- [Marginal Revolution](https://marginalrevolution.com/) (Cowen &amp; Tabarrok) - Economics blog covering AI
+
+- Anthropic blog for Claude updates
+
+- GitHub blog for Copilot features
+
+
+
+---
+class: center, middle
+
+# Questions?
+
+### Get started: [claude.ai/code](https://claude.ai/code)
+
+### Documentation: [docs.anthropic.com/claude-code](https://docs.anthropic.com/claude/docs/claude-code)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

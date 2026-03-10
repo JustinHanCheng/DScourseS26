@@ -1,0 +1,55 @@
+/* Compact slide styles to prevent overflow */
+
+.remark-slide-content {
+  font-size: 22px !important;
+  padding: 1em 2em 1em 2em !important;
+}
+
+.remark-slide-content h1 {
+  font-size: 42px !important;
+  margin-bottom: 0.5em !important;
+}
+
+.remark-slide-content h2 {
+  font-size: 32px !important;
+}
+
+.remark-slide-content h3 {
+  font-size: 26px !important;
+}
+
+.remark-slide-content li {
+  margin-bottom: 0.3em !important;
+  line-height: 1.4 !important;
+}
+
+.remark-slide-content p {
+  margin-bottom: 0.5em !important;
+  line-height: 1.4 !important;
+}
+
+.remark-slide-content ul {
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+.remark-slide-content table {
+  font-size: 18px !important;
+  line-height: 1.3 !important;
+}
+
+.remark-code, .remark-inline-code {
+  font-size: 18px !important;
+  line-height: 1.3 !important;
+}
+
+/* Even smaller for .small class */
+.small {
+  font-size: 16px !important;
+  line-height: 1.3 !important;
+}
+
+/* Pull-left and pull-right adjustments */
+.pull-left, .pull-right {
+  width: 48% !important;
+}
