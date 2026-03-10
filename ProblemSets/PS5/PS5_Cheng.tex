@@ -1,0 +1,92 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\title{Econ 5253 Problem Set 5}
+\author{Last Name: Cheng}
+\date{March 10, 2026}
+
+\begin{document}
+\maketitle
+
+\section*{1. Web Scraping Data From a Website Without an API}
+For the non-API scraping task, I used the Worldometer page:
+\url{https://www.worldometers.info/world-population/population-by-country/}.
+This page provides a country-level population table in HTML, but no official API endpoint for this exact table.
+
+I used SelectorGadget to identify the CSS selector for the table rows and cells:
+\begin{itemize}
+\item Table rows: \texttt{table.datatable tbody tr}
+\item Cells in each row: \texttt{td}
+\end{itemize}
+I parsed the HTML with \texttt{BeautifulSoup} and converted the output into a tabular \texttt{pandas} DataFrame with 233 rows.
+I kept variables such as country, 2026 population, yearly percent change, and world population share.
+
+This data is interesting to me because population size and growth are directly related to long-run economic development, labor supply, migration pressure, and market size.
+I can use this dataset in the future for exploratory analysis when comparing per-capita macro indicators across countries.
+
+Top 10 countries by 2026 population from the scraped table are shown below.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Country & Population 2026 & Yearly Change (\%) & World Share (\%) \\
+\midrule
+India & 1,476,625,576 & 0.87 & 17.79 \\
+China & 1,412,914,089 & -0.22 & 17.02 \\
+United States & 349,035,494 & 0.51 & 4.20 \\
+Indonesia & 287,886,782 & 0.76 & 3.47 \\
+Pakistan & 259,299,791 & 1.60 & 3.12 \\
+Nigeria & 242,431,832 & 2.06 & 2.92 \\
+Brazil & 213,562,666 & 0.35 & 2.57 \\
+Bangladesh & 177,818,044 & 1.21 & 2.14 \\
+Russia & 143,394,458 & -0.42 & 1.73 \\
+Ethiopia & 138,902,185 & 2.53 & 1.67 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Online materials used while implementing parsing:
+\begin{itemize}
+\item BeautifulSoup documentation: \url{https://www.crummy.com/software/BeautifulSoup/bs4/doc/}
+\item Requests quickstart: \url{https://requests.readthedocs.io/en/latest/user/quickstart/}
+\item pandas documentation: \url{https://pandas.pydata.org/docs/}
+\end{itemize}
+
+\section*{2. Data Collection From an API}
+For the API task, I used the World Bank API indicator \texttt{NY.GDP.PCAP.CD} (GDP per capita, current US\$) for three countries: the United States, China, and India.
+The endpoint is:
+\url{https://api.worldbank.org/v2/country/USA;CHN;IND/indicator/NY.GDP.PCAP.CD?format=json&per_page=200}.
+
+I used \texttt{requests} to call the API and \texttt{pandas} to transform the returned JSON into a long-format table and a year-by-country wide table.
+
+Recent values (2019--2024) are:
+
+\begin{center}
+\begin{tabular}{rrrr}
+\toprule
+Year & China & India & United States \\
+\midrule
+2019 & 10,342.90 & 2,041.43 & 64,746.45 \\
+2020 & 10,627.46 & 1,907.04 & 63,515.95 \\
+2021 & 12,887.44 & 2,239.61 & 70,205.05 \\
+2022 & 12,970.61 & 2,347.45 & 76,657.25 \\
+2023 & 12,951.18 & 2,530.12 & 81,032.26 \\
+2024 & 13,303.15 & 2,694.74 & 84,534.04 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+What I found interesting is the large level gap in GDP per capita between the United States and the other two countries, but also the sustained upward trend for China and India over this period.
+India's GDP per capita fell in 2020 and then recovered steadily, which is consistent with a pandemic shock and post-pandemic recovery pattern.
+This API-based table is useful for quickly comparing cross-country growth trajectories and can be extended to additional countries and indicators.
+
+\section*{3. Reproducibility}
+All code is in \texttt{PS5\_Cheng.py}. Running this script reproduces both tasks:
+\begin{itemize}
+\item Web scraping from a non-API source with CSS selectors and HTML parsing
+\item API data retrieval and tabular transformation
+\end{itemize}
+
+\end{document}
