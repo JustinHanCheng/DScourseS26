@@ -5,6 +5,9 @@ Last name: Cheng
 
 This script downloads a public emissions dataset, cleans it, and creates
 three publication-style visualizations for the assignment.
+
+On OSCER, the easiest way to reproduce the project is:
+    bash PS6_Cheng.sh
 """
 
 from pathlib import Path

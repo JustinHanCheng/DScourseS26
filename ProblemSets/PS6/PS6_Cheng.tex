@@ -76,11 +76,17 @@ That matters for interpretation because policy tradeoffs depend on whether emiss
 
 \section*{Reproducibility}
 The submitted Python file \texttt{PS6\_Cheng.py} reproduces the entire assignment.
-Running
+On OSCER, the most direct way to reproduce the project is to run
 \begin{quote}
-\texttt{python3 PS6\_Cheng.py}
+\texttt{bash PS6\_Cheng.sh}
 \end{quote}
-downloads the raw data, performs the cleaning steps described above, and exports the three required PNG files:
+which loads \texttt{Anaconda3/2023.03-1} on OSCER and then executes the Python script.
+Equivalently, one can run
+\begin{quote}
+\texttt{module load Anaconda3/2023.03-1 \&\& python PS6\_Cheng.py}
+\end{quote}
+from the \texttt{PS6} directory.
+These commands download the raw data, perform the cleaning steps described above, and export the three required PNG files:
 \texttt{PS6a\_Cheng.png}, \texttt{PS6b\_Cheng.png}, and \texttt{PS6c\_Cheng.png}.
 
 \end{document}
