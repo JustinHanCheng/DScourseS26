@@ -683,8 +683,19 @@ Cons:
 
 - convergence is more complicated
 - slower in R (since loops are awful)
-- must slowly decrease `alpha` (the learning rate) to achieve convergence: the schedule must satisfy the **Robbins-Monro conditions** — $\sum \alpha_t = \infty$ (enough total progress to reach the minimum) and $\sum \alpha_t^2 < \infty$ (noise eventually shrinks). Geometric decay like $\alpha / 1.0005^t$ fails the first condition; inverse-time decay $\alpha_0 / (1 + ct)$ satisfies both
-- unlike batch GD (where the full gradient is exactly zero at the minimum), per-observation gradients are noisy even at the optimum — so checking parameter change can fire prematurely; checking the relative change in the full objective function is more reliable
+- must slowly decrease $\alpha$ (the learning rate) to achieve convergence
+- convergence can be finnicky due to noise in gradients
+
+---
+# Further SGD considerations
+
+- must slowly decrease $\alpha$ (the learning rate) to achieve convergence: the schedule must satisfy the .hi[Robbins-Monro conditions] $\sum \alpha_t = \infty$ (enough total progress to reach the minimum) and $\sum \alpha_t^2 < \infty$ (noise eventually shrinks). 
+    - Geometric decay like $\alpha / 1.0005^t$ fails the first condition
+    - inverse-time decay $\alpha / (1 + ct)$ satisfies both
+
+- unlike batch GD (where the full gradient is exactly zero at the minimum), per-observation gradients are noisy even at the optimum, so checking parameter change can fire prematurely
+    - checking the relative change in the full objective function is more reliable
+
 
 
 ---
