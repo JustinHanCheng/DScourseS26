@@ -173,8 +173,8 @@ print(summary(lm(Sepal.Length~Sepal.Width+Petal.Length+Petal.Width+Species,data=
 # Stochastic gradient descent with OLS
 #----------------------------------
 # set up parameters
-alpha <- 0.0003
-max_iter <- 1000000
+alpha_0 <- 0.0003
+max_iter <- 200000
 
 ## Our objective function
 objfun <- function(beta, y, X) {
@@ -183,8 +183,8 @@ objfun <- function(beta, y, X) {
 
 # define the gradient for a single observation
 gradient <- function(beta, y_i, X_i) {
-    # For a single observation: -2 * X_i^T * (y_i - X_i*beta)
-    return(-2 * t(X_i) * (y_i - sum(X_i * beta)))
+    # For a single observation: -2 * X_i * (y_i - X_i'*beta)
+    return(-2 * X_i * (y_i - sum(X_i * beta)))
 }
 
 ## read in the data
@@ -195,24 +195,20 @@ X <- model.matrix(~Sepal.Width+Petal.Length+Petal.Width+Species, iris)
 set.seed(100)
 beta <- runif(ncol(X))
 
-# Storage for beta history
-beta_history <- matrix(0, nrow=ncol(X), ncol=max_iter)
-beta_history[,1] <- beta
-
 # stochastic gradient descent method
 iter <- 1
 converged <- FALSE
-beta_prev <- beta + 1  # Ensure different from beta initially
+obj_prev <- objfun(beta, y, X)  # initialize objective at starting values
 
 while (!converged && iter < max_iter) {
-    # Store previous beta
-    beta_prev <- beta
-    
     # Randomly re-order the data
     random <- sample(nrow(X))
     X_shuffled <- X[random,]
     y_shuffled <- y[random]
-    
+
+    # Inverse-time learning rate: satisfies Robbins-Monro conditions
+    alpha <- alpha_0 / (1 + 0.0001 * iter)
+
     # Update parameters for each row of data
     for(i in 1:nrow(X)) {
         X_i <- as.numeric(X_shuffled[i,])  # Convert to numeric vector
@@ -220,25 +216,19 @@ while (!converged && iter < max_iter) {
         grad <- gradient(beta, y_i, X_i)
         beta <- beta - alpha * grad
     }
-    
-    # Reduce learning rate
-    alpha <- alpha / 1.0005
-    
-    # Store current beta
-    if (iter < max_iter) {
-        beta_history[, iter+1] <- beta
-    }
-    
-    # Check convergence
-    if (sqrt(sum((beta - beta_prev)^2)) < 1e-12) {
+
+    # Check convergence: relative change in full objective
+    obj_curr <- objfun(beta, y, X)
+    if (abs(obj_curr - obj_prev) / (1 + abs(obj_prev)) < 1e-10) {
         converged <- TRUE
     }
-    
+    obj_prev <- obj_curr
+
     # Print progress
     if (iter %% 1000 == 0) {
-        cat("Iteration:", iter, "Beta:", beta, "\n")
+        cat("Iteration:", iter, "Beta:", round(beta, 4), "\n")
     }
-    
+
     iter <- iter + 1
 }
 

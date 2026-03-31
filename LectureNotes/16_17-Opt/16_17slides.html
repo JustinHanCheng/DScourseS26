@@ -4,7 +4,7 @@
     <title>Lectures 16–17</title>
     <meta charset="utf-8" />
     <meta name="author" content="Tyler Ransom" />
-    <script src="16_17slides_files/header-attrs-2.28/header-attrs.js"></script>
+    <script src="16_17slides_files/header-attrs-2.30/header-attrs.js"></script>
     <link href="16_17slides_files/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="16_17slides_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
     <link href="16_17slides_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
@@ -88,7 +88,7 @@ class: center, middle, inverse, title-slide
 ---
 # Graph of the optimization problem
 
-&lt;img src="16_17slides_files/figure-html/unnamed-chunk-1-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="16_17slides_files/figure-html/unnamed-chunk-1-1.png" alt="" style="display: block; margin: auto;" /&gt;
 
 This is a graph of a likelihood function 
 
@@ -587,19 +587,19 @@ Now SGD:
 .scroll-box-8[
 ```r
 # set up a stepsize
-alpha &lt;- 0.0003
+alpha_0 &lt;- 0.0003
 
 # set up a number of iterations
-maxiter &lt;- 500000
+maxiter &lt;- 200000
 
 # Our objective function
 objfun &lt;- function(beta,y,X) {
 return ( sum((y-X%*%beta)^2) )
 }
 
-# define the gradient of our objective function
-gradient &lt;- function(beta,y,X) {
-return ( as.vector(-2*X%*%(y-t(X)%*%beta)) )
+# define the gradient for a single observation
+gradient &lt;- function(beta,y_i,X_i) {
+return ( as.vector(-2*X_i*(y_i-sum(X_i*beta))) )
 }
 
 # read in the data
@@ -607,29 +607,28 @@ y &lt;- iris$Sepal.Length
 X &lt;- model.matrix(~Sepal.Width+Petal.Length+Petal.Width+Species,iris)
 
 # initial values
-beta &lt;- runif(dim(X)[2]) #start at uniform random numbers equal to number of coefficients
-
-# randomly initialize a value to beta
 set.seed(100)
-
-# create a vector to contain all beta's for all steps
-beta.All &lt;- matrix("numeric",length(beta),maxiter)
+beta &lt;- runif(dim(X)[2]) #start at uniform random numbers equal to number of coefficients
 
 # stochastic gradient descent method to find the minimum
 iter  &lt;- 1
-beta0 &lt;- 0*beta
-while (norm(as.matrix(beta0)-as.matrix(beta))&gt;1e-12) {
+converged &lt;- FALSE
+obj_prev &lt;- objfun(beta,y,X)
+while (!converged &amp;&amp; iter &lt; maxiter) {
     # Randomly re-order the data
     random &lt;- sample(nrow(X))
-    X &lt;- X[random,]
-    y &lt;- y[random]
+    X_shuf &lt;- X[random,]
+    y_shuf &lt;- y[random]
+    # Inverse-time learning rate: satisfies Robbins-Monro conditions
+    alpha &lt;- alpha_0 / (1 + 0.0001*iter)
     # Update parameters for each row of data
     for(i in 1:dim(X)[1]){
-        beta0 &lt;- beta
-        beta &lt;- beta0 - alpha*gradient(beta0,y[i],as.matrix(X[i,]))
-        beta.All[,i] &lt;- beta
+        beta &lt;- beta - alpha*gradient(beta,y_shuf[i],as.numeric(X_shuf[i,]))
     }
-    alpha &lt;- alpha/1.0005
+    # Check convergence: relative change in full objective
+    obj_curr &lt;- objfun(beta,y,X)
+    if (abs(obj_curr-obj_prev)/(1+abs(obj_prev)) &lt; 1e-10) converged &lt;- TRUE
+    obj_prev &lt;- obj_curr
     if (iter%%1000==0) {
         print(beta)
     }
@@ -660,7 +659,19 @@ Cons:
 
 - convergence is more complicated
 - slower in R (since loops are awful)
-- must slowly decrease `alpha` (the learning rate) to achieve convergence
+- must slowly decrease `\(\alpha\)` (the learning rate) to achieve convergence
+- convergence can be finnicky due to noise in gradients
+
+---
+# Further SGD considerations
+
+- must slowly decrease `\(\alpha\)` (the learning rate) to achieve convergence: the schedule must satisfy the .hi[Robbins-Monro conditions] `\(\sum \alpha_t = \infty\)` (enough total progress to reach the minimum) and `\(\sum \alpha_t^2 &lt; \infty\)` (noise eventually shrinks). 
+    - Geometric decay like `\(\alpha / 1.0005^t\)` fails the first condition
+    - inverse-time decay `\(\alpha / (1 + ct)\)` satisfies both
+
+- unlike batch GD (where the full gradient is exactly zero at the minimum), per-observation gradients are noisy even at the optimum, so checking parameter change can fire prematurely
+    - checking the relative change in the full objective function is more reliable
+
 
 
 ---
@@ -763,10 +774,10 @@ To penalize complexity, just add this term to the cost function (if minimizing) 
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false,
-"ratio": "16:9"
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

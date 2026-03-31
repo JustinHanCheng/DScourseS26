@@ -611,19 +611,19 @@ Now SGD:
 .scroll-box-8[
 ```r
 # set up a stepsize
-alpha <- 0.0003
+alpha_0 <- 0.0003
 
 # set up a number of iterations
-maxiter <- 500000
+maxiter <- 200000
 
 # Our objective function
 objfun <- function(beta,y,X) {
 return ( sum((y-X%*%beta)^2) )
 }
 
-# define the gradient of our objective function
-gradient <- function(beta,y,X) {
-return ( as.vector(-2*X%*%(y-t(X)%*%beta)) )
+# define the gradient for a single observation
+gradient <- function(beta,y_i,X_i) {
+return ( as.vector(-2*X_i*(y_i-sum(X_i*beta))) )
 }
 
 # read in the data
@@ -631,29 +631,28 @@ y <- iris$Sepal.Length
 X <- model.matrix(~Sepal.Width+Petal.Length+Petal.Width+Species,iris)
 
 # initial values
-beta <- runif(dim(X)[2]) #start at uniform random numbers equal to number of coefficients
-
-# randomly initialize a value to beta
 set.seed(100)
-
-# create a vector to contain all beta's for all steps
-beta.All <- matrix("numeric",length(beta),maxiter)
+beta <- runif(dim(X)[2]) #start at uniform random numbers equal to number of coefficients
 
 # stochastic gradient descent method to find the minimum
 iter  <- 1
-beta0 <- 0*beta
-while (norm(as.matrix(beta0)-as.matrix(beta))>1e-12) {
+converged <- FALSE
+obj_prev <- objfun(beta,y,X)
+while (!converged && iter < maxiter) {
     # Randomly re-order the data
     random <- sample(nrow(X))
-    X <- X[random,]
-    y <- y[random]
+    X_shuf <- X[random,]
+    y_shuf <- y[random]
+    # Inverse-time learning rate: satisfies Robbins-Monro conditions
+    alpha <- alpha_0 / (1 + 0.0001*iter)
     # Update parameters for each row of data
     for(i in 1:dim(X)[1]){
-        beta0 <- beta
-        beta <- beta0 - alpha*gradient(beta0,y[i],as.matrix(X[i,]))
-        beta.All[,i] <- beta
+        beta <- beta - alpha*gradient(beta,y_shuf[i],as.numeric(X_shuf[i,]))
     }
-    alpha <- alpha/1.0005
+    # Check convergence: relative change in full objective
+    obj_curr <- objfun(beta,y,X)
+    if (abs(obj_curr-obj_prev)/(1+abs(obj_prev)) < 1e-10) converged <- TRUE
+    obj_prev <- obj_curr
     if (iter%%1000==0) {
         print(beta)
     }
@@ -684,7 +683,19 @@ Cons:
 
 - convergence is more complicated
 - slower in R (since loops are awful)
-- must slowly decrease `alpha` (the learning rate) to achieve convergence
+- must slowly decrease $\alpha$ (the learning rate) to achieve convergence
+- convergence can be finnicky due to noise in gradients
+
+---
+# Further SGD considerations
+
+- must slowly decrease $\alpha$ (the learning rate) to achieve convergence: the schedule must satisfy the .hi[Robbins-Monro conditions] $\sum \alpha_t = \infty$ (enough total progress to reach the minimum) and $\sum \alpha_t^2 < \infty$ (noise eventually shrinks). 
+    - Geometric decay like $\alpha / 1.0005^t$ fails the first condition
+    - inverse-time decay $\alpha / (1 + ct)$ satisfies both
+
+- unlike batch GD (where the full gradient is exactly zero at the minimum), per-observation gradients are noisy even at the optimum, so checking parameter change can fire prematurely
+    - checking the relative change in the full objective function is more reliable
+
 
 
 ---
