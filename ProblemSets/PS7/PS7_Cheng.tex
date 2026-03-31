@@ -1,0 +1,75 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{setspace}
+
+\hypersetup{hidelinks}
+\setstretch{1.1}
+
+\title{Econ 5253 Problem Set 7}
+\author{Last Name: Cheng}
+\date{March 31, 2026}
+
+\begin{document}
+\maketitle
+
+\section*{1. Data and Missingness}
+I loaded \texttt{wages.csv} in Python and first dropped any observation with missing \texttt{hgc} or \texttt{tenure}, as instructed.
+This leaves a cleaned sample of 2,229 women.
+Table \ref{tab:summary} reports summary statistics for the analysis sample.
+
+\input{summary_table.tex}
+
+The \texttt{logwage} variable is missing for 560 of the 2,229 cleaned observations, so the missing rate is
+\[
+\frac{560}{2229} \approx 0.2512,
+\]
+or about 25.1\%.
+I do not think \texttt{logwage} is Missing Completely At Random.
+The missing rate is much higher for college graduates than for non-college graduates (51.5\% versus 16.9\%), and missing observations also have higher average schooling and tenure.
+Because the missingness appears related to observed covariates, the most plausible classification is Missing At Random.
+That said, Missing Not At Random cannot be ruled out completely because we never observe the missing wages themselves.
+
+\section*{2. Imputation and Regression Results}
+For each method, I estimated
+\[
+\log(wage_i) = \beta_0 + \beta_1 hgc_i + \beta_2 college_i + \beta_3 tenure_i + \beta_4 tenure_i^2 + \beta_5 age_i + \beta_6 married_i + \varepsilon_i,
+\]
+where \(\beta_1\) is the return to schooling.
+In the Python implementation, I used \texttt{summary\_col} from \texttt{statsmodels}, which is the assignment's Python analogue to \texttt{modelsummary}, to build the regression comparison table automatically.
+
+\input{regression_table.tex}
+
+The complete-cases estimate of \(\hat{\beta}_1\) is 0.0624, which is below the true value of 0.093.
+Mean imputation performs the worst: it pushes \(\hat{\beta}_1\) down to 0.0497, so it produces the largest downward bias.
+This is the classic problem with mean imputation: it artificially compresses variation in the dependent variable and tends to attenuate relationships.
+
+The predicted-value imputation estimate is 0.0624, essentially identical to the complete-cases estimate.
+That pattern is not surprising because missing wages are filled in with fitted values from the complete-cases regression, so the imputed observations fall exactly on the estimated regression surface.
+As a result, the point estimate barely changes, but the standard errors become too small because this deterministic method ignores imputation uncertainty.
+
+The multiple-imputation estimate from MICE is 0.0628.
+This is very close to the complete-cases and predicted-value estimates, but its standard error is larger than the deterministic regression-imputation standard error because MICE allows the imputed values to vary across draws.
+Among the four approaches, mean imputation is the least credible, deterministic regression imputation is better for the point estimate but too optimistic about precision, and MICE is the most defensible method under a MAR interpretation.
+Even so, all four estimates are below the true value of 0.093, so none of the methods fully recovers the true return to schooling in this sample.
+
+\section*{3. Project Progress}
+For my course project, I have made progress on assembling an international panel based on the Our World in Data CO\(_2\) dataset together with income and population measures.
+I already cleaned the country-year data, restricted the sample to modern years, and created variables such as CO\(_2\) per capita, GDP per capita, and fuel-source shares.
+At this point, I think the most useful modeling strategy will be a combination of descriptive visualization and regression-based analysis.
+In particular, I expect to estimate models relating emissions outcomes to income, energy mix, and other country characteristics, likely using panel or fixed-effects methods once I settle on the final specification.
+I may also use a small amount of exploratory clustering or dimensionality reduction, but the main direction of the project is explanatory modeling rather than pure prediction.
+
+\section*{4. Reproducibility}
+All computations are reproduced by \texttt{PS7\_Cheng.py}.
+Running
+\begin{quote}
+\texttt{python PS7\_Cheng.py}
+\end{quote}
+from the \texttt{PS7} folder reads \texttt{wages.csv} and writes the LaTeX table files \texttt{summary\_table.tex} and \texttt{regression\_table.tex}, which are included in this document.
+
+\end{document}
