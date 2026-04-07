@@ -1,0 +1,93 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{hyperref}
+
+\hypersetup{hidelinks}
+\setstretch{1.1}
+
+\title{Econ 5253 Problem Set 8}
+\author{Last Name: Cheng}
+\date{April 7, 2026}
+
+\begin{document}
+\maketitle
+
+\section*{1. Simulated Data}
+I used Python and set the random-number seed equal to 100.
+The sample size is \(N = 100{,}000\) and the regressor matrix has \(K = 10\) columns.
+The first column of \(X\) is a column of ones, and the remaining nine columns are independent standard normal draws.
+I generated the disturbance vector as
+\[
+\varepsilon_i \sim N(0, 0.25),
+\]
+so the true standard deviation is \(\sigma = 0.5\).
+The coefficient vector is
+\[
+\beta =
+\begin{bmatrix}
+1.5 & -1 & -0.25 & 0.75 & 3.5 & -2 & 0.5 & 1 & 1.25 & 2
+\end{bmatrix}^{\prime},
+\]
+and the dependent variable is
+\[
+Y = X\beta + \varepsilon.
+\]
+
+\section*{2. Closed-Form OLS and Gradient Descent}
+I first computed
+\[
+\hat{\beta}_{OLS} = (X'X)^{-1}X'Y.
+\]
+The resulting estimates are all very close to the data-generating values.
+Across the ten coefficients, the largest absolute deviation from the true \(\beta\) vector is 0.002306.
+Table \ref{tab:comparison} reports the estimates from every method side by side.
+
+I then estimated the same coefficient vector by gradient descent using the learning rate required in the assignment, \(0.0000003\).
+The algorithm converged in 426 iterations.
+Its estimates are numerically indistinguishable from the closed-form solution: the largest absolute difference between the two vectors is only \(1.53 \times 10^{-11}\).
+
+\section*{3. Numerical Optimization}
+For the OLS objective function, I used two numerical optimizers in Python: L-BFGS-B and Nelder-Mead.
+Both methods recovered the same solution as closed-form OLS up to numerical rounding.
+The largest absolute difference from the closed-form estimate is \(2.74 \times 10^{-8}\) for L-BFGS-B and \(5.21 \times 10^{-9}\) for Nelder-Mead.
+So the answers do not differ in any economically meaningful way.
+
+I next estimated the normal linear-model maximum-likelihood problem with L-BFGS-B.
+The estimated coefficient vector is identical to the closed-form OLS estimate to machine precision, which is exactly what we should expect under normal errors.
+The estimated standard deviation is
+\[
+\hat{\sigma}_{MLE} = 0.499080,
+\]
+which is very close to the true value of 0.5.
+
+\input{estimate_comparison.tex}
+
+\section*{4. Direct Regression Call}
+As the easy-way estimator, I ran the regression by calling the outcome vector and regressor matrix directly in Python with \texttt{statsmodels}, which is the Python analogue of using \texttt{lm(Y \textasciitilde X - 1)} without first building a data frame.
+The regression output is reported in Table \ref{tab:ols}.
+
+\input{regression_table.tex}
+
+The direct regression call produces the same coefficient vector as the closed-form solution up to machine precision.
+Relative to the ground-truth \(\beta\), every estimate is extremely close because the sample is large.
+For example, the intercept estimate is 1.4991 instead of 1.5, the coefficient on \(x_5\) is 3.4992 instead of 3.5, and the coefficient on \(x_{10}\) is 1.9977 instead of 2.0.
+The largest absolute gap between the direct OLS estimate and the true parameter is again only about 0.0023.
+
+\section*{5. Reproducibility}
+All computations are reproduced by \texttt{PS8\_Cheng.py}.
+Running
+\begin{quote}
+\texttt{python PS8\_Cheng.py}
+\end{quote}
+from the \texttt{PS8} folder regenerates the two LaTeX tables used in this document:
+\begin{quote}
+\texttt{estimate\_comparison.tex}\\
+\texttt{regression\_table.tex}
+\end{quote}
+
+\end{document}
