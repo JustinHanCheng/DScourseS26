@@ -15,14 +15,14 @@
 \maketitle
 
 \section*{1. Setup}
-I completed this assignment in \texttt{R} using the workflow described in the problem set.
+I completed this assignment in \texttt{R} following the workflow described in \texttt{PS9.pdf}.
 I loaded the Boston housing data from the UCI repository, set the random-number seed equal to 123456, and used \texttt{initial\_split()} to create \texttt{housing\_train} and \texttt{housing\_test}.
 
-I then applied the recipe from the assignment:
+I then applied the recipe specified in the prompt:
 \begin{itemize}
 \item I took logs of the outcome variable \texttt{medv}.
 \item I converted \texttt{chas} to a factor.
-\item I created the interaction term specified in the prompt.
+\item I created the interaction term required by the assignment.
 \item I created degree-6 polynomial terms for each continuous regressor.
 \end{itemize}
 
@@ -41,36 +41,36 @@ The optimal penalty value is
 \]
 The in-sample RMSE is
 \[
-\text{RMSE}_{\text{train}} = 0.136518.
+\text{RMSE}_{\text{train}} = 0.136516.
 \]
 The out-of-sample RMSE on the test sample is
 \[
-\text{RMSE}_{\text{test}} = 0.187798.
+\text{RMSE}_{\text{test}} = 0.187891.
 \]
 
 \section*{4. Ridge Regression with 6-Fold Cross-Validation}
 I next estimated ridge regression and again tuned \(\lambda\) using 6-fold cross-validation.
 The optimal penalty value is
 \[
-\lambda_{\text{ridge}} = 0.023299518105.
+\lambda_{\text{ridge}} = 0.000000000100.
 \]
 The in-sample RMSE is
 \[
-\text{RMSE}_{\text{train}} = 0.138149.
+\text{RMSE}_{\text{train}} = 0.139782.
 \]
 The out-of-sample RMSE on the test sample is
 \[
-\text{RMSE}_{\text{test}} = 0.184009.
+\text{RMSE}_{\text{test}} = 0.180812.
 \]
 
 \section*{5. Interpretation}
 No, I would not be able to estimate a simple linear regression model in the usual way if the data set had more columns than rows.
-In that case, the regressor matrix would not have full column rank, \(X'X\) would be singular, and the OLS coefficients would not be uniquely identified without some form of regularization or dimension reduction.
+In that case, the regressor matrix would not have full column rank, \(X'X\) would be singular, and the OLS coefficients would not be uniquely identified without regularization or some other form of dimension reduction.
 
-Comparing the tuned models, the LASSO has a slightly smaller training RMSE than ridge, so it fits the training sample a little more closely.
+Comparing the tuned models, the LASSO has the smaller in-sample RMSE, so it fits the training sample a bit more closely.
 However, ridge has the smaller test RMSE.
-This pattern suggests that the LASSO fit is a bit more sensitive to sample-specific variation, while ridge accepts slightly more bias in-sample and gets a better bias-variance trade-off out of sample.
-So for this prediction problem, the tuned ridge model performs slightly better in terms of generalization.
+This pattern suggests that the LASSO fit is more sensitive to sample-specific variation, while ridge accepts a bit more in-sample error and achieves a better bias-variance trade-off out of sample.
+For this prediction problem, the tuned ridge model generalizes better.
 
 \section*{6. Reproducibility}
 All computations are reproduced by \texttt{PS9\_Cheng.R}.
