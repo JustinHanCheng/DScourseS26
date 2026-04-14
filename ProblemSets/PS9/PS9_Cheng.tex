@@ -1,0 +1,83 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{hyperref}
+
+\hypersetup{hidelinks}
+\setstretch{1.1}
+
+\title{Econ 5253 Problem Set 9}
+\author{Last Name: Cheng}
+\date{April 14, 2026}
+
+\begin{document}
+\maketitle
+
+\section*{1. Setup}
+I completed this assignment in \texttt{R} using the workflow described in the problem set.
+I loaded the Boston housing data from the UCI repository, set the random-number seed equal to 123456, and used \texttt{initial\_split()} to create \texttt{housing\_train} and \texttt{housing\_test}.
+
+I then applied the recipe from the assignment:
+\begin{itemize}
+\item I took logs of the outcome variable \texttt{medv}.
+\item I converted \texttt{chas} to a factor.
+\item I created the interaction term specified in the prompt.
+\item I created degree-6 polynomial terms for each continuous regressor.
+\end{itemize}
+
+\section*{2. Training Data Dimension and Expanded Regressor Count}
+The raw training data set \texttt{housing\_train} has dimension \(404 \times 14\): 404 observations and 14 columns including the outcome variable.
+The original housing data therefore has 13 \(X\) variables.
+
+After preprocessing, the prepared training data set \texttt{housing\_train\_prepped} has dimension \(404 \times 75\), which means there are 74 predictor columns and 1 outcome column.
+So the transformed model uses 61 more \(X\) variables than the original housing data.
+
+\section*{3. LASSO with 6-Fold Cross-Validation}
+I estimated a LASSO model for \(\log(\texttt{medv})\) and tuned the penalty parameter \(\lambda\) using 6-fold cross-validation.
+The optimal penalty value is
+\[
+\lambda_{\text{lasso}} = 0.001389495494.
+\]
+The in-sample RMSE is
+\[
+\text{RMSE}_{\text{train}} = 0.136518.
+\]
+The out-of-sample RMSE on the test sample is
+\[
+\text{RMSE}_{\text{test}} = 0.187798.
+\]
+
+\section*{4. Ridge Regression with 6-Fold Cross-Validation}
+I next estimated ridge regression and again tuned \(\lambda\) using 6-fold cross-validation.
+The optimal penalty value is
+\[
+\lambda_{\text{ridge}} = 0.023299518105.
+\]
+The in-sample RMSE is
+\[
+\text{RMSE}_{\text{train}} = 0.138149.
+\]
+The out-of-sample RMSE on the test sample is
+\[
+\text{RMSE}_{\text{test}} = 0.184009.
+\]
+
+\section*{5. Interpretation}
+No, I would not be able to estimate a simple linear regression model in the usual way if the data set had more columns than rows.
+In that case, the regressor matrix would not have full column rank, \(X'X\) would be singular, and the OLS coefficients would not be uniquely identified without some form of regularization or dimension reduction.
+
+Comparing the tuned models, the LASSO has a slightly smaller training RMSE than ridge, so it fits the training sample a little more closely.
+However, ridge has the smaller test RMSE.
+This pattern suggests that the LASSO fit is a bit more sensitive to sample-specific variation, while ridge accepts slightly more bias in-sample and gets a better bias-variance trade-off out of sample.
+So for this prediction problem, the tuned ridge model performs slightly better in terms of generalization.
+
+\section*{6. Reproducibility}
+All computations are reproduced by \texttt{PS9\_Cheng.R}.
+Running
+\begin{quote}
+\texttt{Rscript PS9\_Cheng.R}
+\end{quote}
+from the \texttt{PS9} folder regenerates the numerical summary file \texttt{PS9\_Cheng\_results.txt}.
+
+\end{document}
