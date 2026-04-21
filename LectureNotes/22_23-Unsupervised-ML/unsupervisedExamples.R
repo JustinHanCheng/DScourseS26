@@ -1,3 +1,7 @@
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("RDRToolbox")
+library(RDRToolbox)
 library(magrittr)
 library(mclust)
 
@@ -52,6 +56,7 @@ print(cormat)
 print(eigen(cormat)$values)
 
 # compute eigen vectors
+
 v <- eigen(cormat)$vectors
 print(crossprod(v)) # should be identity matrix
 
@@ -70,7 +75,7 @@ print(prop.var.explained)
 
 # keep only the first three components (since these explain 99.5% of the variance)
 reducedX <- prin.comp$x[,seq(1,3)]
-reducedXlook <- prin.comp$x %>% as.data.frame()
+reducedXlook <- prin.comp$x[,seq(1,3)] %>% as.data.frame()
 cormat.new <- reducedXlook %>% cor(.)
 print(cormat.new)
 
@@ -107,85 +112,8 @@ print(clustersKDR)
 print(table(Y,clustersKDR$cluster))
 
 
-# the below uses mlr ... now obsolete
-## try naive Bayes in full and reduced data ... how do we do?
-#-------------------------------
-# Full data
-n <- nrow(iris)
-train <- sample(n, size = .8*n)
-test  <- setdiff(1:n, train)
-iris.train <- iris[train,]
-iris.test  <- iris[test, ]
-
-# classification task
-classifTask <- makeClassifTask(data = iris.train, target = "Species")
-
-# Set prediction algorithm
-alg.nb    <- makeLearner("classif.naiveBayes", predict.type = "response")
-
-# Train the model
-final.nb    <- train(learner = alg.nb,    task = classifTask)
-
-# Predict in test set
-pred.nb    <- predict(final.nb,    newdata = iris.test)
-
-# Assess performance
-print(performance(pred.nb,    measures = list(kappa)))
-
-
-
-# Reduced data
-reducedIris <- as.data.frame(cbind(iris[,5],reducedX))
-colnames(reducedIris)[1] <- "Species"
-reducedIris$Species <- as.factor(reducedIris$Species)
-
-n <- nrow(iris)
-train <- sample(n, size = .8*n)
-test  <- setdiff(1:n, train)
-iris.train <- reducedIris[train,]
-iris.test  <- reducedIris[test, ]
-
-# classification task
-classifTask <- makeClassifTask(data = iris.train, target = "Species")
-
-# Set prediction algorithm
-alg.nb    <- makeLearner("classif.naiveBayes", predict.type = "response")
-
-# Train the model
-final.nb    <- train(learner = alg.nb,    task = classifTask)
-
-# Predict in test set
-pred.nb    <- predict(final.nb,    newdata = iris.test)
-
-# Assess performance
-print(performance(pred.nb,    measures = list(kappa)))
-
-
-#-------------------------------
-# Nonlinear Dimension Reduction
-#-------------------------------
-# Use RDRToolbox package
+## Isomap
 isomapped <- Isomap(data=as.matrix(X), dims=3, k=5)
 XreducedNL <- isomapped$dim3
-
-## try EM clustering on reduced data ... can we still get the same answer?
-#-------------------------------
-clustersNLDR <- XreducedNL %>% Mclust(G=3)
-# equivalently: clusters <- Mclust(X,G=3)
-
-# list inferred probabilities of Pr(Y=y)
-print(clustersNLDR$parameters$pro)
-
-# list frequencies of each species in iris data
-print(table(Y))
-
-# list average of X's conditional on being in class y
-print(clustersNLDR$parameters$mean)
-
-# list posterior class probabilities for each observation in our training data
-head(clustersNLDR$z)
-
-# compare EM classes with actual classes
-print(table(Y,clustersNLDR$classification))
 
 
