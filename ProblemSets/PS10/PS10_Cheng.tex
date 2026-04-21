@@ -1,0 +1,100 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage{hyperref}
+
+\hypersetup{hidelinks}
+\setstretch{1.1}
+
+\title{Econ 5253 Problem Set 10}
+\author{Last Name: Cheng}
+\date{April 21, 2026}
+
+\begin{document}
+\maketitle
+
+\section*{1. Setup}
+I completed this assignment in \texttt{R} following the workflow described in \texttt{PS10.pdf}.
+I started from Dr.\ Ransom's \texttt{PS10starter.R}, loaded the UCI Adult Income data, and then tuned five classification models on the binary target \texttt{high.earner}.
+
+Before running anything I corrected the two intentional typos in the starter code:
+\begin{itemize}
+\item In the \texttt{select()} call that drops \texttt{native.country}, \texttt{fnlwgt}, and \texttt{education.num}, I added the missing minus sign so that \texttt{education.num} is actually dropped. I also removed \texttt{education.num} from the subsequent \texttt{mutate(across(\ldots, as.numeric))} because the column no longer exists after the fix.
+\item I deleted the stray token \texttt{asdfafd} from the data-import section so the script parses cleanly.
+\end{itemize}
+
+I then set the random-number seed to \(100\) (matching the starter), converted every categorical variable to a factor, collapsed the rare levels of \texttt{marital.status}, \texttt{race}, \texttt{workclass}, \texttt{occupation}, and \texttt{education} using the \texttt{fct\_collapse()} calls from the starter, and created an 80/20 \texttt{initial\_split()} into \texttt{income\_train} and \texttt{income\_test}.
+I created 3-fold cross-validation folds on \texttt{income\_train} with \texttt{vfold\_cv(v = 3)}.
+
+The shared classification formula is
+\begin{quote}
+\texttt{high.earner $\sim$ education + marital.status + race + workclass + occupation + relationship + sex + age + capital.gain + capital.loss + hours}
+\end{quote}
+
+\section*{2. Models and Tuning Grids}
+I tuned five \texttt{parsnip} classification specifications using \texttt{tune\_grid()} with \texttt{metric\_set(accuracy)} and the 3-fold resamples.
+Following the PDF's grid-construction rule---real-valued parameters use \texttt{grid\_regular()}, discrete (integer) parameters use a \texttt{tibble()}---I built the following grids.
+
+\begin{itemize}
+\item \textbf{Logistic regression} (\texttt{glmnet}, mixture $=1$).
+\(\texttt{penalty}\) is real-valued, so \(\texttt{penalty}\) is tuned over \texttt{grid\_regular(penalty(), levels = 50)}.
+
+\item \textbf{Decision tree} (\texttt{rpart}).
+\(\texttt{cost\_complexity} \in [0.001,\, 0.2]\) is real-valued, so it uses \texttt{grid\_regular(cost\_complexity(range = c(0.001, 0.2), trans = NULL), levels = 5)}.
+\(\texttt{min\_n}\) is an integer on \(\{10, 20, 30, 40, 50\}\) and \(\texttt{tree\_depth}\) is an integer on \(\{5, 10, 15, 20\}\), both declared as \texttt{tibble()}s and combined with the \texttt{cost\_complexity} grid using \texttt{tidyr::crossing()}, giving \(5 \times 5 \times 4 = 100\) combinations.
+
+\item \textbf{Neural network} (\texttt{nnet}, single hidden layer).
+\(\texttt{hidden\_units}\) is an integer on \(\{1, 2, \ldots, 10\}\) (a \texttt{tibble()}) crossed with \(\texttt{penalty}\) via \texttt{grid\_regular(penalty(), levels = 10)}, yielding \(10 \times 10 = 100\) combinations.
+
+\item \textbf{kNN} (\texttt{kknn}).
+\(\texttt{neighbors}\) is an integer on \(\{1, 2, \ldots, 30\}\), declared as \texttt{tibble(neighbors = seq(1, 30))}.
+
+\item \textbf{Support vector machine} (\texttt{kernlab}, RBF kernel).
+The PDF dictates the exact 6-point set \(\{2^{-2}, 2^{-1}, 2^{0}, 2^{1}, 2^{2}, 2^{10}\}\) for both \(\texttt{cost}\) and \(\texttt{rbf\_sigma}\), so each is a \texttt{tibble()} and they are crossed via \texttt{tidyr::crossing()}, giving \(6 \times 6 = 36\) combinations.
+\end{itemize}
+
+For each model I selected the best hyperparameter set with \texttt{select\_best(metric = "accuracy")}, finalized the workflow with \texttt{finalize\_workflow()}, and then evaluated out-of-sample accuracy with \texttt{last\_fit(income\_split)} followed by \texttt{collect\_metrics()}.
+Tuning was parallelized with \texttt{doParallel} and \texttt{makePSOCKcluster()} using \(N-1\) physical cores.
+
+\section*{3. Results}
+Table~\ref{tab:results} reports, for each model, the optimal hyperparameter values selected by 3-fold cross-validation, the cross-validated classification accuracy at those values, and the out-of-sample accuracy obtained by retraining on \texttt{income\_train} and predicting on \texttt{income\_test}.
+
+\begin{table}[h]
+\centering
+\caption{Tuned hyperparameters, cross-validation accuracy, and test-set accuracy for each classifier.}
+\label{tab:results}
+\begin{tabular}{l l c c}
+\toprule
+Algorithm & Optimal tuning parameters & CV accuracy & Test accuracy \\
+\midrule
+Logistic regression & \(\texttt{penalty} = 1 \times 10^{-10}\) & 0.8452 & 0.8531 \\
+Decision tree       & \(\texttt{cost\_complexity} = 0.001,\ \texttt{tree\_depth} = 20,\ \texttt{min\_n} = 10\) & 0.8611 & 0.8684 \\
+Neural network      & \(\texttt{hidden\_units} = 8,\ \texttt{penalty} = 1\) & 0.8471 & 0.8544 \\
+$k$-nearest neighbors & \(\texttt{neighbors} = 28\) & 0.8362 & 0.8442 \\
+Support vector machine & \(\texttt{cost} = 1,\ \texttt{rbf\_sigma} = 1\) & 0.8524 & 0.8634 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section*{4. Discussion}
+The out-of-sample performance of the five classifiers varies in an interpretable way.
+The decision tree achieves the highest test-set accuracy at \(0.8684\), followed closely by the RBF-kernel SVM at \(0.8634\).
+The neural network (\(0.8544\)) and the logistic LASSO (\(0.8531\)) are nearly tied in the middle.
+The $k$-nearest-neighbors classifier has the lowest test accuracy, \(0.8442\).
+
+This ranking suggests that models capable of capturing non-linear interactions and non-additive structure---the tree with deep cuts (\(\texttt{tree\_depth} = 20\)) and the SVM with an RBF kernel---exploit the Adult Income data better than the linear logistic regression or the distance-based kNN.
+kNN's relatively weak performance is consistent with the high-dimensional, mixed-type feature space induced by the one-hot-encoded factors for \texttt{education}, \texttt{occupation}, \texttt{workclass}, and so on, where Euclidean distance is a noisy similarity measure.
+Every model also attains a small generalization gap between cross-validated and test accuracy (less than one percentage point in every row of Table~\ref{tab:results}), which indicates that the 3-fold cross-validation accuracy was a reliable estimate of out-of-sample performance for this dataset.
+
+\section*{5. Reproducibility}
+All computations are reproduced by \texttt{PS10\_Cheng.R}.
+Running
+\begin{quote}
+\texttt{Rscript PS10\_Cheng.R}
+\end{quote}
+from the \texttt{PS~10} folder refits every model, writes the numerical summary file \texttt{PS10\_Cheng\_results.txt}, and saves the full results object to \texttt{PS10\_Cheng\_results.rds}.
+
+\end{document}
