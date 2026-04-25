@@ -1,0 +1,236 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\title{Econ 5253 -- Problem Set 12}
+\author{Cheng}
+\date{May 7, 2026}
+
+\begin{document}
+\maketitle
+
+\section*{1--3.\ Repository setup and packages}
+The required commands (\texttt{git pull origin master}, \texttt{git fetch upstream})
+were issued from the OSCER \texttt{DScourseS26} folder, and the R packages
+\texttt{sampleSelection}, \texttt{tidyverse}, and \texttt{modelsummary} were
+installed.  All analysis is reproduced by the script
+\texttt{PS12\_Cheng.R}.
+
+\section*{4--6.\ Data summary and missingness}
+The data set \texttt{wages12.csv} contains $N = 2{,}229$ observations on
+working women in the U.S.\ in 1988.  After converting \texttt{college},
+\texttt{married}, and \texttt{union} to factors, Table~\ref{tab:summary}
+reports descriptive statistics.
+
+\begin{table}[h]
+    \centering
+    \caption{Summary statistics for the \texttt{wages12} data}
+    \label{tab:summary}
+    \begin{tabular}{lrrrrrr}
+        \toprule
+        Variable     & Unique & Missing \% & Mean   & SD    & Min    & Max    \\
+        \midrule
+        \texttt{logwage} & 1546 & 30.69 &  1.652 & 0.688 & $-0.956$ &  4.166 \\
+        \texttt{hgc}     &   14 &  0.00 & 12.455 & 2.444 &  5.000 & 18.000 \\
+        \texttt{exper}   & 1932 &  0.00 &  6.435 & 4.867 &  0.000 & 25.000 \\
+        \texttt{kids}    &    2 &  0.00 &  0.429 & 0.495 &  0.000 &  1.000 \\
+        \midrule
+        \multicolumn{7}{l}{\emph{Categorical variables (counts and percentages)}} \\
+        \texttt{college} = Yes & \multicolumn{2}{r}{233 (10.5\%)} & \multicolumn{4}{l}{(No: 1996, 89.5\%)}  \\
+        \texttt{married} = Yes & \multicolumn{2}{r}{1415 (63.5\%)} & \multicolumn{4}{l}{(No: 814, 36.5\%)}  \\
+        \texttt{union}   = Yes & \multicolumn{2}{r}{529 (23.7\%)} & \multicolumn{4}{l}{(No: 1700, 76.3\%)} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\paragraph{Discussion.}  The numbers look plausible for a 1988 cross-section
+of working women: average completed schooling is about 12.5 years (roughly a
+high-school graduate), average labour-market experience is 6.4 years, about
+two-thirds of the sample is married, and 23.7\% are union members.  Mean log
+wage is 1.65 (a wage of about \$5.20/hour, consistent with 1988 dollars).
+
+\paragraph{Missingness.}  Log wages are missing for 684 of 2229 women, a
+\textbf{30.7\%} missing rate.  Because the sample only contains women who
+were working, the missingness in \texttt{logwage} is most likely
+\textbf{Missing Not At Random (MNAR)}.  A woman with a low offered wage is
+more likely to drop out of the labour force or refuse to report a wage,
+i.e.\ her wage is missing precisely because of its value.  This pattern of
+self-selection into reporting violates the MCAR and MAR assumptions and is
+exactly the type of problem the Heckman correction was designed for.
+
+\section*{7.\ Three imputation methods for the wage regression}
+For each method I estimate
+\[
+\text{logwage}_i = \beta_0 + \beta_1 \text{hgc}_i + \beta_2 \text{union}_i +
+                   \beta_3 \text{college}_i + \beta_4 \text{exper}_i +
+                   \beta_5 \text{exper}_i^2 + \eta_i.
+\]
+The three columns of Table~\ref{tab:reg} correspond to (a) listwise deletion
+of complete cases, (b) mean imputation of \texttt{logwage}, and (c) the
+two-step Heckman selection model whose selection equation also includes
+\texttt{married} and \texttt{kids} (the exclusion restrictions).
+
+\begin{table}[h]
+    \centering
+    \caption{Returns to schooling under three missing-data treatments}
+    \label{tab:reg}
+    \begin{tabular}{lccc}
+        \toprule
+        & Listwise deletion & Mean imputation & Heckit (outcome) \\
+        \midrule
+        (Intercept)        &  0.834***  &  1.149***  &  0.446***  \\
+                           & (0.113)    & (0.078)    & (0.122)    \\
+        \texttt{hgc}       &  0.059***  &  0.036***  &  0.091***  \\
+                           & (0.009)    & (0.006)    & (0.010)    \\
+        \texttt{unionYes}  &  0.222*    &  0.068     &  0.186*    \\
+                           & (0.087)    & (0.047)    & (0.084)    \\
+        \texttt{collegeYes}& -0.065     & -0.126**   &  0.092     \\
+                           & (0.106)    & (0.048)    & (0.100)    \\
+        \texttt{exper}     &  0.050***  &  0.021**   &  0.054***  \\
+                           & (0.013)    & (0.007)    & (0.012)    \\
+        \texttt{exper}$^2$ & -0.004**   & -0.001**   & -0.002+    \\
+                           & (0.001)    & (0.000)    & (0.001)    \\
+        Inverse Mills      &            &            & -0.695***  \\
+                           &            &            & (0.060)    \\
+        \midrule
+        $N$                & 1545     & 2229     & 2229 (684 cens.) \\
+        $R^2$              & 0.038    & 0.020    & 0.092    \\
+        \bottomrule
+    \end{tabular}\\[2pt]
+    \footnotesize{$+\,p<0.1$, $*\,p<0.05$, $**\,p<0.01$, $***\,p<0.001$.
+    Standard errors in parentheses.  The Heckit selection equation also
+    contains \texttt{married} and \texttt{kids}.  See \texttt{regression\_table.tex}
+    for the raw \texttt{modelsummary} output.}
+\end{table}
+
+\paragraph{Comparison of $\hat{\beta}_1$.}
+The true return-to-schooling parameter is $\beta_1 = 0.091$.  Across the
+three estimators we obtain
+\[
+   \hat{\beta}_1^{\text{listwise}} = 0.0590, \qquad
+   \hat{\beta}_1^{\text{mean}}     = 0.0363, \qquad
+   \hat{\beta}_1^{\text{Heckit}}   = 0.0915.
+\]
+Both naive imputation methods produce a substantial \emph{downward} bias.
+Listwise deletion under-estimates the return by about a third, and mean
+imputation does even worse: replacing missing wages with the sample mean
+mechanically shrinks the variance of the dependent variable around its mean
+and pulls every slope toward zero, so $\hat{\beta}_1$ collapses to roughly
+$0.036$.  In contrast the Heckman two-step procedure recovers
+$\hat{\beta}_1 = 0.0915$, essentially identical to the true value of
+$0.091$.  The strongly significant inverse-Mills coefficient
+($-0.695$, $p < 0.001$) confirms that the missing-wage process is non-random
+and that ignoring it produces biased OLS estimates.
+
+\paragraph{Take-away.}  When data are MNAR, listwise deletion and mean
+imputation are both unreliable; mean imputation is especially dangerous
+because it injects fictitious observations at the centre of the
+distribution.  Modelling the selection mechanism explicitly (Heckit) is the
+only one of the three methods that delivers an unbiased estimate of the
+returns to schooling here.
+
+\section*{8.\ Probit model of union-job preferences}
+I estimate
+\[
+   u_i = \alpha_0 + \alpha_1 \text{hgc}_i + \alpha_2 \text{college}_i +
+         \alpha_3 \text{exper}_i + \alpha_4 \text{married}_i +
+         \alpha_5 \text{kids}_i + \varepsilon_i,
+\]
+with \texttt{glm(family = binomial(link = "probit"))}.  Estimates appear in
+Table~\ref{tab:probit}.
+
+\begin{table}[h]
+    \centering
+    \caption{Probit model of union-job choice}
+    \label{tab:probit}
+    \begin{tabular}{lc}
+        \toprule
+        & Estimate (s.e.) \\
+        \midrule
+        (Intercept)         & -6.743*** \\
+                            & (0.804)   \\
+        \texttt{hgc}        & -1.009*** \\
+                            & (0.098)   \\
+        \texttt{collegeYes} &  0.397    \\
+                            & (0.427)   \\
+        \texttt{exper}      &  1.849*** \\
+                            & (0.156)   \\
+        \texttt{marriedYes} &  0.588**  \\
+                            & (0.206)   \\
+        \texttt{kids}       &  0.799*** \\
+                            & (0.202)   \\
+        \midrule
+        $N$                 & 2229    \\
+        \bottomrule
+    \end{tabular}\\[2pt]
+    \footnotesize{$**\,p<0.01$, $***\,p<0.001$.  GLM warned of fitted
+    probabilities very close to $0$ or $1$, suggesting the linear index is
+    able to separate the two groups almost perfectly; the magnitudes of the
+    coefficients should therefore be interpreted with caution.}
+\end{table}
+
+\section*{9.\ Counterfactual: no penalty for being married or a mother}
+Following the procedure in \texttt{example.R}, I (i) compute predicted
+probabilities of union membership at the estimated parameters, (ii) zero out
+the coefficients on \texttt{marriedYes} and \texttt{kids}, and (iii)
+recompute the predicted probabilities.  Averaging over the sample:
+\begin{center}
+    \begin{tabular}{lc}
+        \toprule
+        Scenario & Mean predicted Pr(union) \\
+        \midrule
+        Baseline (estimated coefficients)               & 0.2373 \\
+        Counterfactual ($\alpha_4 = \alpha_5 = 0$)      & 0.2174 \\
+        \midrule
+        Difference (counterfactual $-$ baseline)        & $-0.0199$ \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+Because the estimated coefficients on \texttt{married} and \texttt{kids} are
+\emph{positive}, removing them lowers the average predicted probability of
+choosing a union job by about 2 percentage points (from 23.7\% to 21.7\%).
+In other words, the model says that under the status quo, married women and
+mothers are \emph{more} likely to take union jobs than their otherwise
+identical single, childless counterparts.
+
+\paragraph{Is the model realistic?}  Probably not.  Several features of the
+estimates are hard to defend.
+\begin{enumerate}\itemsep 2pt
+    \item \emph{Sign of \texttt{hgc} and \texttt{exper}.}  More schooling
+    sharply lowers the probability of taking a union job ($\hat{\alpha}_1 =
+    -1.01$), while more experience sharply raises it ($\hat{\alpha}_3 =
+    1.85$).  Both magnitudes are implausibly large for a probit and the
+    \texttt{glm.fit} warning about fitted probabilities of $0$/$1$ is a
+    classic sign of (near) complete separation -- so the precise numbers
+    cannot be trusted.
+    \item \emph{No price variable.}  We model the choice between a union and
+    non-union job purely from demographics and human-capital variables.  An
+    economic model of job choice should at minimum include the union and
+    non-union wage offers; the omission means the estimated $\hat{\alpha}$'s
+    confound \emph{preferences} with \emph{offer probabilities}.
+    \item \emph{Selection bias.}  The sample only contains women who are
+    employed, so we are estimating preferences conditional on labour-force
+    participation, an issue we just demonstrated is non-trivial in
+    Section~7.
+    \item \emph{Counterfactual interpretation.}  Even taken at face value,
+    the policy ``remove the union-job preference for marriage / motherhood''
+    only changes the average probability by $\approx 2$ percentage points.
+    The estimated effect is therefore small and, given the issues above,
+    not a credible basis for actual policy advice.
+\end{enumerate}
+A more realistic specification would (a) include union and non-union wage
+offers (predicted from the Heckman wage regression), (b) jointly model
+labour-force participation and union choice, and (c) be estimated on a
+larger and more representative sample.
+
+\section*{10--12.\ Repository synchronisation}
+The files \texttt{PS12\_Cheng.R}, \texttt{PS12\_Cheng.tex}, and
+\texttt{PS12\_Cheng.pdf} were placed in
+\verb|~/DScourseS26/ProblemSets/PS12| on OSCER and synced with the GitHub
+fork using the standard \texttt{git add / commit / push} workflow.
+
+\end{document}
