@@ -27,14 +27,14 @@ the WRDS Compustat–CRSP merged universe.
 │   ├── raw/                  # parquet files written by 01_pull_wrds.py
 │   └── clean/                # intermediate and final firm-year panel
 ├── output/
-│   ├── tables/               # LaTeX tables included by paper/main.tex
+│   ├── tables/               # LaTeX tables included by paper/FinalProject_Cheng.tex
 │   └── figures/              # PDF / EPS / PNG figures
 └── paper/
-    ├── main.tex              # 10-page written report (source)
-    ├── main.pdf              # compiled report
-    ├── References.bib        # bibliography
-    ├── slides.tex            # 5-slide Beamer presentation (source)
-    └── slides.pdf            # compiled slide deck
+    ├── FinalProject_Cheng.tex  # 10-page written report (source)
+    ├── FinalProject_Cheng.pdf  # compiled report
+    ├── References.bib          # bibliography
+    ├── Slides_Cheng.tex        # 5-slide Beamer presentation (source)
+    └── Slides_Cheng.pdf        # compiled slide deck
 ```
 
 ## Prerequisites
@@ -79,13 +79,14 @@ python code/run_all.py --skip-data
 
 ## Compiling the paper
 
-The PDF (`paper/main.pdf`) and the slide deck (`paper/slides.pdf`) are
-already included in this repository. To rebuild them from source after editing:
+The PDF (`paper/FinalProject_Cheng.pdf`) and the slide deck
+(`paper/Slides_Cheng.pdf`) are already included in this repository. To rebuild
+them from source after editing:
 
 ```bash
 cd paper
-pdflatex main.tex && bibtex main && pdflatex main.tex && pdflatex main.tex
-pdflatex slides.tex
+pdflatex FinalProject_Cheng.tex && bibtex FinalProject_Cheng && pdflatex FinalProject_Cheng.tex && pdflatex FinalProject_Cheng.tex
+pdflatex Slides_Cheng.tex
 ```
 
 ## Key specification

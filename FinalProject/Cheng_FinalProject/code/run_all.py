@@ -2,7 +2,8 @@
 
 Runs steps 01--07 in order, producing the tables under output/tables/ and the
 figure under output/figures/. Paper compilation (pdflatex + bibtex on
-paper/main.tex and paper/slides.tex) is left as a separate manual step.
+paper/FinalProject_Cheng.tex and paper/Slides_Cheng.tex) is left as a separate
+manual step.
 
 Usage:
     python run_all.py             # full pipeline (WRDS pull + analysis)
@@ -56,7 +57,7 @@ def main() -> None:
 
     print(f"\n{'='*60}")
     print("  Pipeline complete. Tables in output/tables/, figure in output/figures/.")
-    print("  To build the paper, compile paper/main.tex and paper/slides.tex manually.")
+    print("  To build the paper, compile paper/FinalProject_Cheng.tex and paper/Slides_Cheng.tex manually.")
     print(f"{'='*60}")
 
 
