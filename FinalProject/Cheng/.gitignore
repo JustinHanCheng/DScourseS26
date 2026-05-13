@@ -1,0 +1,33 @@
+# WRDS credentials — NEVER commit
+WRDS.txt
+.pgpass
+
+# Raw and intermediate data (WRDS EULA prohibits redistribution; rerun 01_pull_wrds.py)
+data/raw/
+data/clean/
+
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.nav
+*.snm
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

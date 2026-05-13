@@ -1,0 +1,113 @@
+\documentclass[11pt,aspectratio=169]{beamer}
+\usetheme{metropolis}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\title{The Asymmetric Timeliness of Earnings Revisited}
+\subtitle{A replication of Basu (1997) on U.S.\ firms, 2015--2024}
+\author{Justin Cheng}
+\institute{University of Oklahoma}
+\date{ECON 5253, Spring 2026}
+
+\begin{document}
+
+\maketitle
+
+% ---- 1. Introduction ----
+\begin{frame}{Topic and motivation}
+  \textbf{Question.} Do U.S.\ public firms still book bad news into earnings
+  faster than good news, the way Basu (1997) reported for 1963--1990?
+  \medskip
+  \begin{itemize}
+    \item Conservatism principle: gains require more verifiable evidence
+          than losses, so earnings should react more strongly to negative
+          returns.
+    \item The Basu reverse regression became the workhorse test of
+          conditional conservatism.
+    \item Critics (Dietrich--Muller--Riedl, 2007) and modern fair-value
+          rules leave it open whether the asymmetry survives in the
+          post-2015 sample.
+  \end{itemize}
+\end{frame}
+
+% ---- 2. Data ----
+\begin{frame}{Data}
+  \textbf{Source.} WRDS Compustat \texttt{funda} + CRSP \texttt{msf},
+  linked through the CCM link table.
+
+  \medskip
+  \textbf{Sample filters.}
+  \begin{itemize}
+    \item U.S.\ common stocks (CRSP \texttt{shrcd} $\in \{10,11\}$),
+          NYSE, AMEX, NASDAQ.
+    \item December fiscal year-ends. Drop financials (SIC 6000--6999).
+    \item Beginning-of-period price above one dollar; no missing EPS or
+          price.
+    \item Winsorize $EP$ and $R$ at the 1\% / 99\% pooled tails.
+  \end{itemize}
+
+  \medskip
+  \textbf{Variables.}
+  $EP_{it} = \mathrm{EPS}_{it} / P_{i,t-1}$ (split-adjusted),
+  $R_{it}$ is the compounded twelve-month return,
+  $D_{it} = \mathbf{1}\{R_{it} < 0\}$.
+\end{frame}
+
+% ---- 3. Methods ----
+\begin{frame}{Methods}
+  \textbf{Basu (1997) reverse regression}
+  \begin{equation*}
+    EP_{it} = \beta_0 + \beta_1 D_{it} + \beta_2 R_{it}
+            + \boxed{\beta_3} \, D_{it} R_{it} + \varepsilon_{it}
+  \end{equation*}
+  \begin{itemize}
+    \item $\beta_2$: sensitivity of earnings to good news.
+    \item $\beta_2 + \beta_3$: sensitivity of earnings to bad news.
+    \item $\beta_3 > 0$ means conditional conservatism is present.
+  \end{itemize}
+
+  \medskip
+  Estimated by OLS, with firm-clustered standard errors (Petersen 2009).
+  Sub-samples: pre-COVID (2015--2019) vs.\ COVID era (2020--2024).
+  Year-by-year coefficients drive the trend figure.
+\end{frame}
+
+% ---- 4. Findings ----
+\begin{frame}{Findings}
+  \begin{itemize}
+    \item Pooled sample: $\beta_3 = 0.402$ ($t=26.4$). Conservatism is
+          alive in 17{,}188 firm-years.
+    \item Implied bad-news slope $\beta_2 + \beta_3 \approx 0.32$;
+          the good-news slope $\beta_2 \approx -0.08$ is near zero.
+    \item Pre- and COVID-era averages: $0.450 \to 0.364$. Looks like
+          mild compression on its own.
+    \item Year-by-year tells the real story.
+          \begin{itemize}
+            \item 2020 jumps to $0.60$ as COVID impairments hit.
+            \item 2021 collapses to $0.13$ in the recovery year, since
+                  the prior write-downs cannot reverse.
+            \item By 2023 and 2024 the coefficient is back near $0.5$.
+          \end{itemize}
+  \end{itemize}
+\end{frame}
+
+% ---- 5. Takeaway ----
+\begin{frame}{What did we learn?}
+  \begin{itemize}
+    \item Basu (1997) replicates on a fresh decade of U.S.\ data. Bad
+          news loads on earnings far faster than good news.
+    \item Conditional conservatism is state-dependent. The COVID-19
+          shock pushed $\beta_3$ up in 2020, the recovery pulled it
+          down in 2021, and two-period averages hide that swing.
+    \item Practical takeaway: earnings remain a lopsided signal.
+          Analysts, lenders, and standard-setters should not assume the
+          asymmetry has gone away under modern fair-value rules.
+    \item Limitations: the Dietrich--Muller--Riedl (2007) mechanical-bias
+          critique still applies; the standard errors here are
+          firm-clustered only, with two-way clustering left for future
+          work.
+  \end{itemize}
+\end{frame}
+
+\end{document}
